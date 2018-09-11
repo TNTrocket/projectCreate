@@ -1,16 +1,13 @@
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const merge = require("webpack-merge");
 const baseWebpackConfig = require('./webpack.base')
 
-process.env.NODE_ENV = 'production'
-
 module.exports = merge(baseWebpackConfig,{
-  mode: process.env.NODE_ENV,
+  mode: 'production',
   entry: {
     app: ["./src/main"]
   },
@@ -20,53 +17,35 @@ module.exports = merge(baseWebpackConfig,{
     chunkFilename: "assets/js/[name].[chunkhash].js"
   },
   optimization: {
-    runtimeChunk: {
-      name: 'manifest'
-    },
     minimizer: [
       new UglifyJsPlugin({
         cache: true,
         parallel: true,
-        sourceMap: false, // set to true if you want JS source maps,
+        sourceMap: false,
         uglifyOptions: {
           warnings: false
         }
       }),
       new OptimizeCSSAssetsPlugin({})
-    ],
-    splitChunks:{
-      chunks: 'async',
-      minSize: 30000,
-      minChunks: 1,
-      maxAsyncRequests: 5,
-      maxInitialRequests: 3,
-      name: false,
-      cacheGroups: {
-        vendor: {
-          name: 'vendor',
-          chunks: 'initial',
-          priority: -10,
-          reuseExistingChunk: false,
-          test: /node_modules\/(.*)\.js/
-        },
-        styles: {
-          name: 'styles',
-          test: /\.(less|css)$/,
-          chunks: 'all',
-          minChunks: 1,
-          reuseExistingChunk: true,
-          enforce: true
-        }
-      }
-    }
+    ]
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        include: path.join(__dirname, "..", "src"),
-        loader: "babel-loader",
-      },
+        {
+            // 对所有引入的tsx文件进行解析
+            test: /\.tsx?$/,
+            loader: 'ts-loader',
+            exclude: /node_modules/,
+            options: {
+                // 自动将所有.vue文件转化为.vue.tsx文件
+                appendTsSuffixTo: [/\.vue$/]
+            }
+        },
+      // {
+      //   test: /\.js$/,
+      //   include: path.join(__dirname, "..", "src"),
+      //   loader: "babel-loader",
+      // },
         {
             test: /\.less$/,
             use: [
@@ -84,9 +63,6 @@ module.exports = merge(baseWebpackConfig,{
                     loader: 'postcss-loader'
                 },
                 {
-                    loader: 'resolve-url-loader'
-                },
-                {
                     loader: 'less-loader'
                 }
             ]
@@ -102,9 +78,6 @@ module.exports = merge(baseWebpackConfig,{
                 },
                 {
                     loader: 'postcss-loader'
-                },
-                {
-                    loader: 'resolve-url-loader'
                 }
             ]
         }
@@ -114,20 +87,10 @@ module.exports = merge(baseWebpackConfig,{
     hints: false
   },
   plugins: [
-    new webpack.DefinePlugin({
-      "process.env": {
-        NODE_ENV: JSON.stringify("production")
-      }
-    }),
-    new webpack.NamedModulesPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new MiniCssExtractPlugin({
       filename: 'assets/css/app.[name].css',
       chunkFilename: 'assets/css/[name].[contenthash:12].css'
-    }),
-    new HtmlWebpackPlugin({
-      hash: false,
-      template: "./index.html"
     })
   ]
 });

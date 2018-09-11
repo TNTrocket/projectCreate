@@ -2,14 +2,14 @@ import axios from 'axios';
 import qs from 'qs';
 
 
-axios.defaults.baseURL = '/ntce-c';
+axios.defaults.baseURL = '/wechat-api';
 axios.defaults.headers.common['Cache-Control'] = 'no-cache';
 axios.defaults.headers.common['Pragma'] = 'no-cache';
 let isShowIngError = false;
 axios.interceptors.response.use(function ({data, config, status}) {
     // Do something with response data
     if (status === 200) {
-        if (data.code === 10000) {
+        if (data.result === 10000) {
             return Promise.resolve(data.data);
         }else {
             if (config.ignoreErrorModal) {

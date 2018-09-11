@@ -1,4 +1,6 @@
 const path = require("path");
+const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 function resolve(dir) {
@@ -11,12 +13,42 @@ module.exports = {
     filename: "app.[hash].js"
   },
     resolve: {
-        extensions: ['.js', '.vue', '.json'],
+        extensions: ['.js', '.vue', '.json', '.ts', '.tsx'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             'screens': resolve('src/screens'),
             'components': resolve('src/components'),
             'util': resolve("src/util")
+        }
+    },
+    optimization: {
+        runtimeChunk: {
+            name: 'manifest'
+        },
+        splitChunks:{
+            chunks: 'async',
+            minSize: 30000,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            name: false,
+            cacheGroups: {
+                vendor: {
+                    name: 'vendor',
+                    chunks: 'initial',
+                    priority: -10,
+                    reuseExistingChunk: false,
+                    test: /node_modules\/(.*)\.js/
+                },
+                styles: {
+                    name: 'styles',
+                    test: /\.(less|css)$/,
+                    chunks: 'all',
+                    minChunks: 1,
+                    reuseExistingChunk: true,
+                    enforce: true
+                }
+            }
         }
     },
   module: {
@@ -74,6 +106,8 @@ module.exports = {
                 to: 'static',
                 ignore: ['.*']
             }
-        ])
+        ]),
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
+        new HtmlWebpackPlugin({hash: false, template: "./index.html"})
     ]
 };
