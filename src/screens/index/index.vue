@@ -1,6 +1,6 @@
 <template>
-    <div :class="$style.wapperBg">
-        <poxBox @disableScroll="disabledScroll">
+    <div :class="$style.wapperBg" id="wapper">
+        <poxBox>
             <div v-if="alertType === 'rule'" slot="alert">
                 <div :class="$style.ruleContent">
                     <div @click="modalClose" :class="$style.modalClose">
@@ -311,19 +311,6 @@
                 mask: true
             })
         }
-        disabledScroll (isDisable){
-            debugger
-            this.$nextTick(()=>{
-                let bodyHtml = document.querySelector(`${this.$style.wapperBg}`)
-                bodyHtml.addEventListener('touchmove', (e)=>{
-                    console.log('123===', isDisable)
-                    e.preventDefault()
-//                if(this.disableMove){
-//                    e.preventDefault()
-//                }
-                }, true)
-            })
-        }
     }
 </script>
 
@@ -442,6 +429,7 @@
             padding-left: 10px;
             align-items: center;
             input {
+                width: 254px;
                 margin-left: 49px;
                 border: 0;
                 background: #ECE8E8;

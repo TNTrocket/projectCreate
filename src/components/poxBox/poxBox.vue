@@ -31,6 +31,7 @@
 
         [propName: string]: any;
     }
+
     interface alertModeTmp {
         [propName: string]: any;
     }
@@ -47,7 +48,6 @@
             this.$parent.$on('modal', (data) => {
                 this.clear()
                 this.disableMove = true
-                this.disableTouchMove()
                 this.$nextTick(() => {
                     this.isShow = true
                     this.modalObj = data
@@ -72,10 +72,10 @@
             this.$parent.$on('alert:mode', (data) => {
                 this.clearAlertMode()
                 this.disableMove = true
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.isAlertShow = true
                     this.alertMode = data
-                    switch (this.alertMode.type){
+                    switch (this.alertMode.type) {
                         case 'alertToast':
                             setTimeout(() => {
                                 this.clearAlertMode()
@@ -85,17 +85,24 @@
                 })
             })
         }
-        disableTouchMove(){
-            this.$nextTick(()=>{
-                debugger
-               this.$emit('disableScroll', this.disableMove)
+
+        disableTouchMove() {
+            this.$nextTick(() => {
+                let wapperHtml = document.querySelector(`#wapper`)
+                wapperHtml.addEventListener('touchmove', (e) => {
+                    if (this.disableMove) {
+                        e.preventDefault()
+                    }
+                }, false)
             })
         }
+
         clearAlertMode(): void {
             this.alertMode = {}
             this.isAlertShow = false
 //            this.disableMove = false
         }
+
         clear(): void {
             this.modalObj = {type: 'none'}
             this.isShow = false
@@ -103,7 +110,7 @@
         }
 
         mounted() {
-//            this.disableTouchMove()
+            this.disableTouchMove()
         }
     }
 </script>
@@ -157,7 +164,8 @@
         top: 0;
         left: 0;
     }
-    .alertShow{
+
+    .alertShow {
         position: absolute;
         top: 0;
         left: 0;
@@ -165,7 +173,8 @@
         height: 100%;
         z-index: 102;
     }
-    .loading{
+
+    .loading {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -176,7 +185,7 @@
         transform: translate(-50%, -50%);
         border-radius: 10px;
         z-index: 103;
-        .move{
+        .move {
             width: 80px;
             height: 80px;
             animation: circle infinite .75s linear;
@@ -187,12 +196,13 @@
             border-radius: 100%;
         }
     }
+
     @keyframes circle {
-        0%{
-            transform:rotate(0deg);
+        0% {
+            transform: rotate(0deg);
         }
-        100%{
-            transform:rotate(360deg);
+        100% {
+            transform: rotate(360deg);
         }
     }
 </style>
