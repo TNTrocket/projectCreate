@@ -348,7 +348,6 @@
 
         // xxx.file m:n
         function converErrors(arr) {
-            debugger
             if (arr.length == 1) {
                 var e = arr[0]
                 var target = e.target

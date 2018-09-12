@@ -1,14 +1,21 @@
 import Mock from 'mockjs'
 Mock.mock(/wechat-api\/mk\/award\/getActivity/, 'post', function (options) {
+    let nowDate = new Date().getTime()
     return Mock.mock({
             'result': 10000,
             'msg': 'ok',
             'data': {
                  id: 123,
                  content: '123456',
+                 themeColor:'#FFAF4F',
+                 startTime: nowDate - 1000*120,
+                 currentTime: nowDate,
+                 endTime: nowDate+ 1200*100,
+                 activityDetailUrl: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_detail.png',
+                 activityHeadUrl: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/newHeaderBg.png',
                 'giftList|3': [{
                     giftTitle: '啊啊啊',
-                    giftUrl: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/gitColorBg.png',
+                    giftUrl: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/gitpic.png',
                     giftPrize: 120,
                     giftDes: 'eff',
                     giftId: '@id'

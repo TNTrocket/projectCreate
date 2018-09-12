@@ -30,7 +30,8 @@ module.exports = merge(baseWebpackConfig, {
         historyApiFallback: true,
         disableHostCheck: true,
         proxy: {
-            '/wechat-api': 'http://10.250.90.93:8081/'
+            // '/wechat-api': 'http://10.250.90.93:8081/'
+            '/wechat-api': 'http://10.250.91.27:8080/'
         },
         open: true,
         host:'0.0.0.0'

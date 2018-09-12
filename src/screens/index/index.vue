@@ -35,121 +35,48 @@
                 <div :class="$style.loginBtn" @click="goLoginPay">登录</div>
             </div>
         </poxBox>
-        <div :class="$style.wrapper">
+        <div :class="$style.wrapper" :style="`background:${themeColor? themeColor : '#FFAF4F'}`">
             <div :class="$style.header">
                 <div :class="$style.logo"></div>
                 <div :class="$style.rule" @click="showRule">活动规则</div>
-                <div :class="$style.headerBg"></div>
+                <div :class="$style.countBox">
+                    <div :class="$style.hour">{{hour}}</div>
+                    <div>时</div>
+                    <div :class="$style.minute">{{minute}}</div>
+                    <div>分</div>
+                    <div :class="$style.second">{{second}}</div>
+                    <div>秒之后结束</div>
+                </div>
+                <div :class="$style.giftNav"></div>
+                <img :class="$style.headerBg" :src="activityHeadUrl"/>
             </div>
-            <div :class="$style.giftBag" v-for="item in giftList">
-                <img :class="$style.gitBg"
-                     :src="item.giftUrl"/>
-                <div :class="$style.content">
-                    <div :class="$style.left">
-                        <div :class="$style.name">{{item.giftTitle}}</div>
-                        <div :class="$style.price">
-                            <p>¥&nbsp;<span :class="$style.priceNum">{{item.giftPrize}}</span></p>
-                            <p :class="$style.tips">预付金</p>
+            <div :class="$style.giftBagBox">
+                <div :class="$style.giftBag" v-for="item in giftList">
+                    <img :class="$style.gitBg"
+                         :src="item.giftUrl"/>
+                    <div :class="$style.content">
+                        <div :class="$style.left">
+                            <div :class="$style.name">{{item.giftTitle}}</div>
+                            <div :class="$style.des">{{item.giftDes}}</div>
+                        </div>
+                        <div :class="$style.right">
+                            <div :class="$style.price">
+                                <p>¥<span :class="$style.priceNum">{{item.giftPrize}}</span></p>
+                            </div>
+                            <div :class="$style.buyBtn" @click="goBuy(item)">立即抢购</div>
                         </div>
                     </div>
-                    <div :class="$style.right">
-                        <div :class="$style.des">{{item.giftDes}}</div>
-                    </div>
-                </div>
-                <div :class="$style.btn" @click="goBuy(item)">
-                    立即抢购
                 </div>
             </div>
-            <div :class="$style.shangdeDetail">
-                <div :class="$style.whiteContent">
-                    <div :class="$style.broadcast1">
-                        <div :class="$style.title"></div>
-                        <div :class="$style.tips">学习不止，流量不停</div>
-                        <div :class="$style.line">
-                            <div :class="$style.blue"></div>
-                            <div :class="$style.orange"></div>
-                        </div>
-                        <div :class="$style.tips2">
-                            尚德机构与中国电信战略合作推出
-                        </div>
-                        <div :class="$style.bItem">
-                            <div :class="[$style.item, $style.item1]">
-                                <div :class="$style.icon1"></div>
-                                <div>前3个月免费</div>
-                            </div>
-                            <div :class="[$style.item, $style.item2]">
-                                <div :class="$style.icon2"></div>
-                                <div>全国不限流量</div>
-                            </div>
-                            <div :class="[$style.item, $style.item3]">
-                                <div :class="$style.icon3"></div>
-                                <div>每月200分钟免费通话</div>
-                            </div>
-                            <div :class="[$style.item, $style.item4]">
-                                <div :class="$style.icon4"></div>
-                                <div>免费来电提醒</div>
-                            </div>
-                            <div :class="[$style.item, $style.item5]">
-                                <div :class="$style.icon5"></div>
-                                <div>优酷高德地图等应用免流量使用</div>
-                            </div>
-                        </div>
-                        <div :class="$style.fenge"></div>
-                    </div>
-                    <div :class="$style.broadcast2">
-                        <div :class="$style.title"></div>
-                        <div :class="$style.tips">学习是一种信仰</div>
-                        <div :class="$style.line">
-                            <div :class="$style.blue"></div>
-                            <div :class="$style.orange"></div>
-                        </div>
-                        <div :class="[$style.broadcast2Item, $style.broadcast2Item1]">
-                            <div>15年成人职业教育培训经验低门槛考本科</div>
-                            <div :class="$style.pic1"></div>
-                        </div>
-                        <div :class="[$style.broadcast2Item, $style.broadcast2Item2]">
-                            <div :class="$style.pic2"></div>
-                            <div>全面线上学习模式直播+录播</div>
-                        </div>
-                        <div :class="[$style.broadcast2Item, $style.broadcast2Item3]">
-                            <div>IPO美股上市职业教育领域的领跑者</div>
-                            <div :class="$style.pic3"></div>
-                            <div :class="$style.leftYuan"></div>
-                            <div :class="$style.rightYuan"></div>
-                        </div>
-                    </div>
-                    <div :class="$style.broadcast3">
-                        <div :class="$style.title"></div>
-                        <div :class="$style.line">
-                            <div :class="$style.blue"></div>
-                            <div :class="$style.orange"></div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item1]">
-                            <div :class="$style.pic1"></div>
-                            <div>自考培训全方位网络课程</div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item2]">
-                            <div>培训通过率高代65%高出全国平均值2倍</div>
-                            <div :class="$style.pic2"></div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item3]">
-                            <div :class="$style.pic3"></div>
-                            <div>内部教材高频浓缩题库</div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item4]">
-                            <div>培训通过率高代65%高出全国平均值2倍</div>
-                            <div :class="$style.pic4"></div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item5]">
-                            <div :class="$style.pic5"></div>
-                            <div>培训通过率高代65%高出全国平均值2倍</div>
-                        </div>
-                        <div :class="[$style.broadcast3Item, $style.broadcast3Item6]">
-                            <div>培训通过率高代65%高出全国平均值2倍</div>
-                            <div :class="$style.pic6"></div>
-                        </div>
-                    </div>
-                </div>
+            <div :class="$style.detailPic">
+                <img :src="activityDetailUrl"/>
+            </div>
+            <div :class="$style.fenge"></div>
+            <div :class="$style.compyDetail">
+                <img src="https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/b_compy.png"/>
+            </div>
+            <div :class="$style.footer">
+                <img src="https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_footer.png"/>
             </div>
         </div>
     </div>
@@ -179,7 +106,7 @@
         alertType: string = ''
         codeStatus: string = 'getCode'
         reciprocalTxt: number = 60
-        timer: any
+        timer: number
         $refs: {
             code: HTMLFormElement,
             phone: HTMLFormElement
@@ -189,22 +116,61 @@
         actInfoId: number
         currentGiftId: number
         $style: any
+        $route: any
+        hour: string | number = '00'
+        minute: string | number = '00'
+        second: string | number = '00'
+        activityHeadUrl: string = ''
+        activityDetailUrl: string = ''
+        CountTimer: number
+        themeColor: string = ''
 
 
         async created() {
-            let giftContent: any
+            let query = this.$route.query
+            let activityContent: any
             try {
-                giftContent = await this.getActivity()
-                this.activtyRule = giftContent.content
-                this.actInfoId = giftContent.id
+                activityContent = await this.getActivity(query)
+                this.activtyRule = activityContent.content
+                this.actInfoId = activityContent.id
+                this.activityHeadUrl = activityContent.activityHeadUrl
+                this.themeColor = activityContent.themeColor
+                this.activityDetailUrl = activityContent.activityDetailUrl
             } catch (error) {
-                giftContent = {giftList: []}
+                activityContent = {giftList: []}
             }
-            this.giftList = giftContent.giftList
+            this.giftList = activityContent.giftList
+            let startTime: number = activityContent.startTime
+            let currentTime: number = activityContent.currentTime
+            let endTime: number = activityContent.endTime
+            //活动进行中
+            if (startTime < currentTime && currentTime < endTime) {
+                let countTime: number = endTime - currentTime
+                this.countDateTime(countTime)
+                this.CountTimer = setInterval(() => {
+                    countTime-= 1000
+                    if(countTime <=0 ){
+                        countTime = 0
+                        clearInterval(this.CountTimer)
+                    }
+                    this.countDateTime(countTime)
+                }, 1000)
+            }
         }
 
-        getActivity() {
-            return apiCall.post('/mk/award/getActivity')
+        getActivity(query) {
+            return apiCall.post('/mk/award/getActivity', {
+                id: query.id
+            })
+        }
+
+        countDateTime(countTime) {
+            let countHour: number = Math.floor(countTime / 1000 / 60 / 60)
+            let countMin: number = Math.floor(countTime / 1000 / 60 % 60)
+            let countSecond: number = countTime / 1000 % 60
+            this.hour = (countHour >= 0 && countHour < 10) ? `0${countHour}` : countHour
+            this.minute = (countMin >= 0 && countMin < 10) ? `0${countMin}` : countMin
+            this.second = (countSecond >= 0 && countSecond < 10) ? `0${countSecond}` : countSecond
         }
 
         mounted() {
@@ -213,7 +179,8 @@
         modalClose(): void {
             this.$emit('modal:close')
         }
-        loginClose():void{
+
+        loginClose(): void {
             clearInterval(this.timer)
             this.codeStatus = 'getCode'
             this.modalClose()
@@ -249,13 +216,13 @@
                 phoneNumber: this.$refs.phone.value,
                 smsCode: this.$refs.code.value
             }).then(() => {
-                let depositData : depositDataTmp = {
+                let depositData: depositDataTmp = {
                     mobile: this.$refs.phone.value,
                     actInfoId: this.actInfoId,
                     giftId: this.currentGiftId
                 }
                 this.$emit('alertModal:close')
-                apiCall.post('/mk/nine/sales/createDeposit', depositData ).then(()=>{
+                apiCall.post('/mk/nine/sales/createDeposit', depositData).then(() => {
                     this.$emit('alert:mode', {
                         txt: '登录成功',
                         type: 'alertToast'
@@ -276,8 +243,8 @@
             this.$emit('alert:mode', {
                 type: 'alertLoading'
             })
-            apiCall.post('/sms/getSmsCheckCode', {
-                mobile: this.$refs.phone.value
+            apiCall.post('/sms/getSmsCode', {
+                phoneNumber: this.$refs.phone.value
             }).then(() => {
                 this.$emit('alertModal:close')
                 this.codeStatus = 'reciprocal'
@@ -289,7 +256,7 @@
                         this.reciprocalTxt = 60
                     }
                 }, 1000)
-            }).catch(()=>{
+            }).catch(() => {
                 this.$emit('alertModal:close')
             })
         }
@@ -320,7 +287,7 @@
         width: 172px;
         height: 28px;
         background-size: 100% 100%;
-        margin-top: 110px;
+        margin: 114px auto 0 auto;
     }
 
     .ruleContent {
@@ -499,9 +466,9 @@
 
     .wrapper {
         width: 750px;
-        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/indexBg.png') no-repeat;
-        background-size: cover;
-        padding-bottom: 121px;
+        padding-bottom: 73px;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 
     .wapperBg {
@@ -535,359 +502,187 @@
         line-height: 1;
     }
 
-    　.headerBg {
+    .headerBg {
         width: 750px;
-        height: 764px;
-        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/headerBg3.png') no-repeat;
-        background-size: 100% 100%;
+        height: 1334px;
     }
 
-    .giftBag {
+    .header {
         position: relative;
-        margin: 80px auto 0 auto;
-        width: 689px;
-        .gitBg {
-            width: 689px;
-            height: 312px;
-            position: absolute;
-            z-index: 3;
-            top: 0;
-            left: 0;
-        }
-        .content {
-            display: flex;
-            width: 689px;
-            height: 312px;
-            position: relative;
-            z-index: 5;
-            left: 0;
-            color: #fff;
-            top: 0;
-            .left {
-                flex: none;
-                width: 210px;
-                display: flex;
-                height: 312px;
-                justify-content: space-between;
-                flex-direction: column;
-                .name {
-                    padding: 36px 13px 0 13px;
-                    font-size: 37px;
-                    font-weight: 600;
-                    text-align: center;
-                    color: rgba(255, 255, 255, 1);
-                }
-                .price {
-                    font-size: 32px;
-                    font-weight: 400;
-                    color: rgba(255, 255, 255, 1);
-                    padding: 0 13px 17px 13px;
-                    p {
-                        line-height: 1;
-                        text-align: center;
-                    }
-                    .priceNum {
-                        font-size: 38px;
-                    }
-                    .tips {
-                        margin-top: 18px;
-                    }
-                }
-            }
-            .right {
-                flex: 1;
-                padding: 0 37px 0 20px;
-                display: flex;
-                align-items: center;
-            }
-        }
-        .btn {
-            width: 539px;
-            height: 88px;
-            line-height: 88px;
-            text-align: center;
-            background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/gitBtn.png') no-repeat;
-            background-size: 100% 100%;
-            margin: 30px auto 0 auto;
-            font-size: 40px;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 1);
-        }
     }
 
-    .shangdeDetail {
+    .countBox {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        bottom: 101px;
+        left: 50%;
+        z-index: 3;
+        font-size: 28px;
+        transform: translateX(-50%);
+        width: 420px;
+        .hour, .minute, .second {
+            width: 50px;
+            height: 50px;
+            color: #fff;
+            line-height: 50px;
+            text-align: center;
+            background: red;
+            border-radius: 10px;
+        }
+    }
+    .giftNav{
+        position: absolute;
+        bottom: 23px;
+        left: 50%;
+        z-index: 3;
+        transform: translateX(-50%);
+        width: 25px;
+        height: 45px;
+        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/giftNav.png') no-repeat;
+        background-size: cover;
+        animation: giftNavDown infinite 2s linear;
+    }
+    @keyframes giftNavDown {
+        0%{
+            transform: translate(0px, -10px);
+        }
+        50%{
+            transform: translate(0px, 20px);
+        }
+        100%{
+            transform: translate(0px, -10px);
+        }
+    }
+    .giftBagBox{
         width: 690px;
-        height: 4143px;
-        border: 6px solid rgba(255, 0, 0, 1);
-        border-radius: 25px;
-        margin: 130px auto 0 auto;
-        padding: 14px;
-        .whiteContent {
-            background: #fff;
-            height: 100%;
-            border-radius: 25px;
-            .broadcast1 {
+        background:rgba(255,255,255,0.8);
+        border-radius:25px;
+        padding-top: 40px;
+        padding-bottom: 20px;
+        margin: 0 auto;
+        .giftBag {
+            position: relative;
+            margin: 0 auto 20px auto;
+            width: 648px;
+            .gitBg {
+                width: 648px;
+                height: 221px;
+                position: absolute;
+                z-index: 3;
+                top: 0;
+                left: 0;
+            }
+            .content {
                 display: flex;
-                align-items: center;
-                flex-direction: column;
-                padding-top: 93px;
-                .title {
-                    width: 177px;
-                    height: 57px;
-                    position: relative;
-                    background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/shangCard.png') no-repeat;
-                    background-size: 100% 100%;
-                }
-                .tips {
-                    font-size: 30px;
-                    font-weight: 400;
-                    color: rgba(0, 0, 0, 1);
-                    margin-top: 16px;
-                    line-height: 1;
-                }
-                .line {
-                    margin-top: 23px;
-                }
-                .tips2 {
-                    font-size: 24px;
-                    font-weight: 400;
-                    color: rgba(0, 0, 0, 1);
-                    margin-top: 49px;
-                    line-height: 1;
-                }
-                .bItem {
+                width: 100%;
+                height: 221px;
+                position: relative;
+                z-index: 5;
+                left: 0;
+                color: #fff;
+                top: 0;
+                .left {
+                    flex: 1;
                     display: flex;
-                    flex-wrap: wrap;
                     justify-content: center;
-                    margin-top: 83px;
-                    align-items: flex-start;
-                    .item {
-                        width: 145px;
-                        /*flex: 1;*/
-                        font-size: 24px;
-                        font-weight: 400;
-                        color: rgba(0, 0, 0, 1);
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        margin-bottom: 48px;
-                        &.item1 {
-                            margin-right: 80px;
-                        }
-                        &.item2 {
-                            margin-right: 80px;
-                        }
-                        &.item3 {
-                        }
-                        &.item4 {
-                            margin-right: 80px;
-                        }
-                        &.item5 {
-                        }
-                    }
-                    .icon1 {
-                        width: 107px;
-                        height: 106px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_date.png') no-repeat;
-                        background-size: 100% 100%;
-                        margin-bottom: 8px;
-                    }
-                    .icon2 {
-                        width: 108px;
-                        height: 108px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_data.png') no-repeat;
-                        background-size: 100% 100%;
-                        margin-bottom: 8px;
-                    }
-                    .icon3 {
-                        width: 107px;
-                        height: 106px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_phone.png') no-repeat;
-                        background-size: 100% 100%;
-                        margin-bottom: 8px;
-                    }
-                    .icon4 {
-                        width: 103px;
-                        height: 108px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_ling.png') no-repeat;
-                        background-size: 100% 100%;
-                        margin-bottom: 8px;
-                    }
-                    .icon5 {
-                        width: 87px;
-                        height: 105px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_map.png') no-repeat;
-                        background-size: 100% 100%;
-                        margin-bottom: 8px;
-                    }
-                }
-            }
-            .broadcast2 {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 140px;
-                .title {
-                    width: 237px;
-                    height: 58px;
-                    position: relative;
-                    background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/shangde.png') no-repeat;
-                    background-size: 100% 100%;
-                }
-                .tips {
-                    font-size: 30px;
-                    font-weight: 400;
-                    color: rgba(0, 0, 0, 1);
-                    margin-top: 16px;
-                }
-                .line {
-                    margin-top: 25px;
-                }
-                .broadcast2Item {
-                    display: flex;
-                    position: relative;
-                    justify-content: space-around;
                     align-items: center;
-                    font-size: 32px;
-                    font-weight: 600;
-                    color: rgba(51, 51, 51, 1);
-                    .pic1 {
-                        margin-left: 40px;
-                        flex: none;
-                        width: 354px;
-                        height: 198px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/bpic1.png') no-repeat;
-                        background-size: 100% 100%;
+                    flex-direction: column;
+                    .name {
+                        font-weight: 600;
+                        text-align: center;
+                        line-height: 1;
+                        color: rgba(255, 255, 255, 1);
+                        font-size:62px;
                     }
-                    .pic2 {
-                        flex: none;
-                        margin-right: 40px;
-                        width: 353px;
-                        height: 198px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/bpic2.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic3 {
-                        flex: none;
-                        margin-left: 40px;
-                        width: 352px;
-                        height: 198px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/bpic3.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    &.broadcast2Item1 {
-                        padding: 60px 14px;
-                        border-bottom: 1px solid rgba(255, 0, 0, 1);
-                    }
-                    &.broadcast2Item2 {
-                        padding: 34px 14px;
-                        border-bottom: 1px solid rgba(255, 0, 0, 1);
-                    }
-                    &.broadcast2Item3 {
-                        padding: 58px 14px 89px 14px;
-                        border-bottom: 1px dashed rgba(161, 161, 161, 1);
-                    }
-                    .leftYuan {
-                        width: 34px;
-                        height: 68px;
-                        border-radius: 0 34px 34px 0;
-                        background: #FFA502;
-                        position: absolute;
-                        z-index: 9;
-                        bottom: -34px;
-                        left: 0;
-                    }
-                    .rightYuan {
-                        width: 34px;
-                        height: 68px;
-                        border-radius: 34px 0 0 34px;
-                        background: #FFA502;
-                        position: absolute;
-                        z-index: 9;
-                        bottom: -34px;
-                        right: 0;
+                    .des{
+                        margin-top: 22px;
+                        width:346px;
+                        height:26px;
+                        background:rgba(255,255,255,1);
+                        font-size:20px;
+                        font-weight:normal;
+                        color: #000;
+                        text-align: center;
+                        line-height: 26px;
                     }
                 }
-            }
-            .broadcast3 {
-                margin-top: 141px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                .title {
-                    width: 239px;
-                    height: 59px;
-                    position: relative;
-                    background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/shangdeyou.png') no-repeat;
-                    background-size: 100% 100%;
-                }
-                .line {
-                    margin-top: 33px;
-                    margin-bottom: 52px;
-                }
-                .broadcast3Item {
+                .right {
+                    width: 230px;
+                    flex: none;
+                    padding: 45px 0 40px 0;
                     display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                     align-items: center;
-                    justify-content: space-around;
-                    font-size: 32px;
-                    font-weight: 600;
-                    padding: 22px 14px;
-                    border-bottom: 1px solid rgba(255, 177, 47, 1);
-                    color: rgba(51, 51, 51, 1);
-                    &:last-child {
-                        border: 0;
+                    .price {
+                        font-size:74px;
+                        font-weight:600;
+                        color: rgba(255, 255, 255, 1);
+                        p {
+                            line-height: 1;
+                            text-align: center;
+                            span{
+                                line-height: 1;
+                            }
+                        }
+                        /*.priceNum {*/
+                            /*font-size: 38px;*/
+                        /*}*/
                     }
-                    .pic1 {
-                        margin-right: 88px;
-                        flex: none;
-                        width: 233px;
-                        height: 209px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic1.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic2 {
-                        margin-left: 82px;
-                        flex: none;
-                        width: 233px;
-                        height: 222px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic2.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic3 {
-                        margin-right: 88px;
-                        flex: none;
-                        width: 233px;
-                        height: 222px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic3.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic4 {
-                        margin-left: 144px;
-                        flex: none;
-                        width: 218px;
-                        height: 222px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic4.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic5 {
-                        margin-right: 88px;
-                        flex: none;
-                        width: 233px;
-                        height: 201px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic5.png') no-repeat;
-                        background-size: 100% 100%;
-                    }
-                    .pic6 {
-                        margin-left: 91px;
-                        flex: none;
-                        width: 233px;
-                        height: 196px;
-                        background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/lpic6.png') no-repeat;
-                        background-size: 100% 100%;
+                    .buyBtn{
+                        margin-top: 30px;
+                        width:133px;
+                        height:51px;
+                        background:rgba(255,255,255,1);
+                        font-size:25px;
+                        font-weight:600;
+                        color:rgba(255,63,38,1);
+                        line-height:51px;
+                        text-align: center;
+                        border-radius: 25px;
                     }
                 }
             }
+            /*.btn {*/
+                /*width: 539px;*/
+                /*height: 88px;*/
+                /*line-height: 88px;*/
+                /*text-align: center;*/
+                /*background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/gitBtn.png') no-repeat;*/
+                /*background-size: 100% 100%;*/
+                /*margin: 30px auto 0 auto;*/
+                /*font-size: 40px;*/
+                /*font-weight: 400;*/
+                /*color: rgba(255, 255, 255, 1);*/
+            /*}*/
+        }
+    }
+    .detailPic{
+        margin: 50px auto 0 auto;
+        width: 720px;
+        img{
+            width: 100%;
+            height: 923px;
+        }
+    }
+    .compyDetail{
+        margin: 89px auto 0 auto;
+        width: 690px;
+        height: 1042px;
+        img{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .footer{
+        margin: 50px 0 0 31px;
+        width: 727px;
+        height: 1526px;
+        img{
+            width: 100%;
+            height: 100%;
         }
     }
 
