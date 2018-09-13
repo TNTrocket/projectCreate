@@ -47,7 +47,8 @@
                     <div :class="$style.second">{{second}}</div>
                     <div>秒之后结束</div>
                 </div>
-                <div :class="$style.giftNav"></div>
+                <!--<div :class="$style.giftNav"></div>-->
+                <div :class="$style.headerBox"></div>
                 <img :class="$style.headerBg" :src="activityHeadUrl"/>
             </div>
             <div :class="$style.giftBagBox">
@@ -61,7 +62,7 @@
                         </div>
                         <div :class="$style.right">
                             <div :class="$style.price">
-                                <p>¥<span :class="$style.priceNum">{{item.giftPrize}}</span></p>
+                                ¥{{item.giftPrize}}
                             </div>
                             <div :class="$style.buyBtn" @click="goBuy(item)">立即抢购</div>
                         </div>
@@ -69,16 +70,21 @@
                 </div>
             </div>
             <div :class="$style.detailPic">
-                <img :src="activityDetailUrl"/>
+                <img v-lazy="activityDetailUrl"/>
             </div>
             <div :class="$style.fenge"></div>
             <div :class="$style.compyDetail">
-                <img src="https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/b_compy.png"/>
+                <img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/b_compy.png'"/>
             </div>
             <div :class="$style.footer">
-                <img src="https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_footer.png"/>
+                <img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_footer.png'"/>
             </div>
         </div>
+        <!--支付-->
+        <form :action="formAction" method="post" id="form-pay">
+            <input type="hidden" name="orderNumber" :value="formValue" id="orderInput">
+            <!--<input type="hidden" name="termType" value="mobile">-->
+        </form>
     </div>
 </template>
 
@@ -91,6 +97,7 @@
         type: string;
         txt?: string;
     }
+
     interface depositDataTmp {
         mobile: number,
         actInfoId: number,
@@ -117,6 +124,7 @@
         currentGiftId: number
         $style: any
         $route: any
+        $router: any
         hour: string | number = '00'
         minute: string | number = '00'
         second: string | number = '00'
@@ -124,11 +132,17 @@
         activityDetailUrl: string = ''
         CountTimer: number
         themeColor: string = ''
+        formAction: string = ''
+        formValue: string | number = ''
 
 
-        async created() {
+        async mounted() {
             let query = this.$route.query
             let activityContent: any
+            this.$emit('modal', {
+                type: 'loading',
+                icon: 'eat'
+            })
             try {
                 activityContent = await this.getActivity(query)
                 this.activtyRule = activityContent.content
@@ -143,19 +157,42 @@
             let startTime: number = activityContent.startTime
             let currentTime: number = activityContent.currentTime
             let endTime: number = activityContent.endTime
+            if (startTime > currentTime) {
+                this.$router.push({
+                    path: '/status',
+                    query: {
+                        enterType: 'notStart'
+                    }
+                })
+            }
+            if (endTime < currentTime) {
+                this.$router.push({
+                    path: '/status',
+                    query: {
+                        enterType: 'activityEnd'
+                    }
+                })
+            }
             //活动进行中
             if (startTime < currentTime && currentTime < endTime) {
                 let countTime: number = endTime - currentTime
                 this.countDateTime(countTime)
                 this.CountTimer = setInterval(() => {
-                    countTime-= 1000
-                    if(countTime <=0 ){
+                    countTime -= 1000
+                    if (countTime <= 0) {
                         countTime = 0
+                        this.$router.push({
+                            path: '/status',
+                            query: {
+                                enterType: 'activityEnd'
+                            }
+                        })
                         clearInterval(this.CountTimer)
                     }
                     this.countDateTime(countTime)
                 }, 1000)
             }
+            this.modalClose()
         }
 
         getActivity(query) {
@@ -173,8 +210,8 @@
             this.second = (countSecond >= 0 && countSecond < 10) ? `0${countSecond}` : countSecond
         }
 
-        mounted() {
-        }
+//        mounted() {
+//        }
 
         modalClose(): void {
             this.$emit('modal:close')
@@ -222,14 +259,26 @@
                     giftId: this.currentGiftId
                 }
                 this.$emit('alertModal:close')
-                apiCall.post('/mk/nine/sales/createDeposit', depositData).then(() => {
+                apiCall.post('/mk/nine/sales/createDeposit', depositData).then((data) => {
                     this.$emit('alert:mode', {
                         txt: '登录成功',
                         type: 'alertToast'
                     })
                     MtaH5.clickStat('logined')
+                    this.goPaying(data)
+                }).catch(() => {
+                    this.$emit('modal', {
+                        type: 'toast',
+                        txt: '登录失败'
+                    })
                 })
             })
+        }
+
+        goPaying(data): void {
+            this.formValue = data.depositNo;
+            this.formAction = data.url;
+            (<HTMLFormElement>document.getElementById('form-pay')).submit();
         }
 
         indexAlertMode(obj: indexToastObj): void {
@@ -502,9 +551,18 @@
         line-height: 1;
     }
 
-    .headerBg {
+    .headerBox {
         width: 750px;
-        height: 1334px;
+        height: 1060px;
+    }
+
+    .headerBg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 750px;
+        height: 1332px;
     }
 
     .header {
@@ -516,7 +574,7 @@
         justify-content: space-between;
         align-items: center;
         position: absolute;
-        bottom: 101px;
+        bottom: 14px;
         left: 50%;
         z-index: 3;
         font-size: 28px;
@@ -532,7 +590,8 @@
             border-radius: 10px;
         }
     }
-    .giftNav{
+
+    .giftNav {
         position: absolute;
         bottom: 23px;
         left: 50%;
@@ -544,21 +603,25 @@
         background-size: cover;
         animation: giftNavDown infinite 2s linear;
     }
+
     @keyframes giftNavDown {
-        0%{
+        0% {
             transform: translate(0px, -10px);
         }
-        50%{
+        50% {
             transform: translate(0px, 20px);
         }
-        100%{
+        100% {
             transform: translate(0px, -10px);
         }
     }
-    .giftBagBox{
+
+    .giftBagBox {
+        position: relative;
+        z-index: 2;
         width: 690px;
-        background:rgba(255,255,255,0.8);
-        border-radius:25px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 25px;
         padding-top: 40px;
         padding-bottom: 20px;
         margin: 0 auto;
@@ -594,16 +657,16 @@
                         text-align: center;
                         line-height: 1;
                         color: rgba(255, 255, 255, 1);
-                        font-size:62px;
+                        font-size: 62px;
                     }
-                    .des{
+                    .des {
                         margin-top: 22px;
-                        width:346px;
-                        height:26px;
-                        background:rgba(255,255,255,1);
-                        font-size:20px;
-                        font-weight:normal;
-                        color: #000;
+                        width: 346px;
+                        height: 26px;
+                        background: rgba(255, 255, 255, 1);
+                        font-size: 20px;
+                        font-weight: normal;
+                        color: rgba(102, 102, 102, 1);
                         text-align: center;
                         line-height: 26px;
                     }
@@ -617,70 +680,57 @@
                     justify-content: center;
                     align-items: center;
                     .price {
-                        font-size:74px;
-                        font-weight:600;
+                        line-height: 1;
+                        font-size: 74px;
+                        font-weight: 600;
                         color: rgba(255, 255, 255, 1);
                         p {
-                            line-height: 1;
                             text-align: center;
-                            span{
-                                line-height: 1;
-                            }
                         }
-                        /*.priceNum {*/
-                            /*font-size: 38px;*/
-                        /*}*/
                     }
-                    .buyBtn{
+                    .buyBtn {
                         margin-top: 30px;
-                        width:133px;
-                        height:51px;
-                        background:rgba(255,255,255,1);
-                        font-size:25px;
-                        font-weight:600;
-                        color:rgba(255,63,38,1);
-                        line-height:51px;
+                        width: 133px;
+                        height: 51px;
+                        background: rgba(255, 255, 255, 1);
+                        font-size: 25px;
+                        font-weight: 600;
+                        color: rgba(255, 63, 38, 1);
+                        line-height: 51px;
                         text-align: center;
                         border-radius: 25px;
+                        position: relative;
+                        bottom: 10px;
                     }
                 }
             }
-            /*.btn {*/
-                /*width: 539px;*/
-                /*height: 88px;*/
-                /*line-height: 88px;*/
-                /*text-align: center;*/
-                /*background: url('https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/gitBtn.png') no-repeat;*/
-                /*background-size: 100% 100%;*/
-                /*margin: 30px auto 0 auto;*/
-                /*font-size: 40px;*/
-                /*font-weight: 400;*/
-                /*color: rgba(255, 255, 255, 1);*/
-            /*}*/
         }
     }
-    .detailPic{
+
+    .detailPic {
         margin: 50px auto 0 auto;
         width: 720px;
-        img{
+        img {
             width: 100%;
             height: 923px;
         }
     }
-    .compyDetail{
+
+    .compyDetail {
         margin: 89px auto 0 auto;
         width: 690px;
         height: 1042px;
-        img{
+        img {
             width: 100%;
             height: 100%;
         }
     }
-    .footer{
+
+    .footer {
         margin: 50px 0 0 31px;
         width: 727px;
         height: 1526px;
-        img{
+        img {
             width: 100%;
             height: 100%;
         }

@@ -4,15 +4,16 @@ import Router from 'vue-router'
 
 let routes, router;
 Vue.use(Router);
-// function isInWechat() {
-//     let ua = navigator.userAgent.toLowerCase();
-//     if (ua.match(/MicroMessenger/i) == "micromessenger") {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
-// let isWechat = true
+function isInWechat(): boolean {
+    let ua = navigator.userAgent.toLowerCase();
+    let existUa = ua.match(/MicroMessenger/i)
+    if ( existUa && existUa.toString() === "micromessenger") {
+        return true;
+    } else {
+        return false;
+    }
+}
+let isWechat: boolean = true
 routes = [
     {
         path: '/',
@@ -20,6 +21,14 @@ routes = [
         component: () => import('screens/index/index'),
         meta: {
             title: '首页'
+        }
+    },
+    {
+        path: '/status',
+        name: 'status',
+        component: () => import('screens/activityStatus/index'),
+        meta: {
+            title: '提示'
         }
     },
     {
@@ -43,10 +52,10 @@ router.beforeEach((to, from, next) => {
     if(to.name === 'success'){
         MtaH5.clickStat('buyed')
     }
-    // if(!isWechat && to.name!=='error'){
-    //     next({path: '/error'})
-    // } else {
-    next()
-    // }
+    if(!isWechat && to.name!=='status'){
+        next({path: '/status', query:{enterType: 'notWechat'}})
+    } else {
+        next()
+    }
 });
 export default router;
