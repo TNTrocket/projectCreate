@@ -43,9 +43,13 @@
     @Component
     export default class success extends Vue {
         depositObj: object = {}
+        $route: any
 
         created() {
-            apiCall.post('mk/nine/sales/getDeposit').then((data)=>{
+            let depositNo = this.$route.query.depositNo
+            apiCall.post('mk/nine/sales/getDeposit',{
+                depositNo
+            }).then((data)=>{
                 this.depositObj = data
             })
         }

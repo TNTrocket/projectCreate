@@ -32,7 +32,7 @@
                     <div :class="$style.getCode" v-if="codeStatus === 'getCode'" @click="getCode">获取验证码</div>
                     <div :class="$style.reciprocal" v-if="codeStatus === 'reciprocal'">{{reciprocalTxt}}</div>
                 </div>
-                <div :class="$style.loginBtn" @click="goLoginPay">登录</div>
+                <div :class="$style.loginBtn" @click="goLogin">登录</div>
             </div>
         </poxBox>
         <div :class="$style.wrapper" :style="`background:${themeColor? themeColor : '#FFAF4F'}`">
@@ -72,13 +72,13 @@
             <div :class="$style.detailPic">
                 <img v-lazy="activityDetailUrl"/>
             </div>
-            <div :class="$style.fenge"></div>
-            <div :class="$style.compyDetail">
-                <img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/b_compy.png'"/>
-            </div>
-            <div :class="$style.footer">
-                <img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_footer.png'"/>
-            </div>
+            <!--<div :class="$style.fenge"></div>-->
+            <!--<div :class="$style.compyDetail">-->
+            <!--<img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/b_compy.png'"/>-->
+            <!--</div>-->
+            <!--<div :class="$style.footer">-->
+            <!--<img v-lazy="'//static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/s_footer.png'"/>-->
+            <!--</div>-->
         </div>
         <!--支付-->
         <form :action="formAction" method="post" id="form-pay">
@@ -92,6 +92,7 @@
     import apiCall from 'util/xhr'
     import {Component, Vue} from 'vue-property-decorator'
     import poxBox from 'components/poxBox/poxBox'
+    import {cookie} from 'util/global'
 
     interface indexToastObj {
         type: string;
@@ -139,6 +140,7 @@
         async mounted() {
             let query = this.$route.query
             let activityContent: any
+            this.actInfoId = query.activityId
             this.$emit('modal', {
                 type: 'loading',
                 icon: 'eat'
@@ -146,7 +148,7 @@
             try {
                 activityContent = await this.getActivity(query)
                 this.activtyRule = activityContent.content
-                this.actInfoId = activityContent.id
+//                this.actInfoId = activityContent.id
                 this.activityHeadUrl = activityContent.activityHeadUrl
                 this.themeColor = activityContent.themeColor
                 this.activityDetailUrl = activityContent.activityDetailUrl
@@ -158,20 +160,10 @@
             let currentTime: number = activityContent.currentTime
             let endTime: number = activityContent.endTime
             if (startTime > currentTime) {
-                this.$router.push({
-                    path: '/status',
-                    query: {
-                        enterType: 'notStart'
-                    }
-                })
+                this.goStatusPage('notStart')
             }
             if (endTime < currentTime) {
-                this.$router.push({
-                    path: '/status',
-                    query: {
-                        enterType: 'activityEnd'
-                    }
-                })
+                this.goStatusPage('activityEnd')
             }
             //活动进行中
             if (startTime < currentTime && currentTime < endTime) {
@@ -181,12 +173,7 @@
                     countTime -= 1000
                     if (countTime <= 0) {
                         countTime = 0
-                        this.$router.push({
-                            path: '/status',
-                            query: {
-                                enterType: 'activityEnd'
-                            }
-                        })
+                        this.goStatusPage('activityEnd')
                         clearInterval(this.CountTimer)
                     }
                     this.countDateTime(countTime)
@@ -197,14 +184,14 @@
 
         getActivity(query) {
             return apiCall.post('/mk/award/getActivity', {
-                id: query.id
+                id: this.actInfoId
             })
         }
 
         countDateTime(countTime) {
             let countHour: number = Math.floor(countTime / 1000 / 60 / 60)
             let countMin: number = Math.floor(countTime / 1000 / 60 % 60)
-            let countSecond: number = countTime / 1000 % 60
+            let countSecond: number = Math.floor(countTime / 1000 % 60)
             this.hour = (countHour >= 0 && countHour < 10) ? `0${countHour}` : countHour
             this.minute = (countMin >= 0 && countMin < 10) ? `0${countMin}` : countMin
             this.second = (countSecond >= 0 && countSecond < 10) ? `0${countSecond}` : countSecond
@@ -212,6 +199,14 @@
 
 //        mounted() {
 //        }
+        goStatusPage(type) {
+            this.$router.push({
+                path: '/status',
+                query: {
+                    enterType: type
+                }
+            })
+        }
 
         modalClose(): void {
             this.$emit('modal:close')
@@ -223,23 +218,25 @@
             this.modalClose()
         }
 
-        goLoginPay(): void {
+        goLogin(): void {
             let reg: any = /^1[0-9]{10}$/;
-            if (!this.$refs.phone.value) {
+            let phoneNumber: string = this.$refs.phone.value
+            let msgCode: string = this.$refs.code.value
+            if (!phoneNumber) {
                 this.$emit('alert:mode', {
                     txt: '请输入手机号',
                     type: 'alertToast'
                 })
                 return
             }
-            if (!reg.test(this.$refs.phone.value)) {
+            if (!reg.test(phoneNumber)) {
                 this.$emit('alert:mode', {
                     txt: '输入正确的11位手机号',
                     type: 'alertToast'
                 })
                 return
             }
-            if (!this.$refs.code.value) {
+            if (!msgCode) {
                 this.$emit('alert:mode', {
                     txt: '请输入验证码',
                     type: 'alertToast'
@@ -249,29 +246,119 @@
             this.$emit('alert:mode', {
                 type: 'alertLoading'
             })
-            apiCall.post('/mk/nine/sales/authPhoneBySms', {
-                phoneNumber: this.$refs.phone.value,
-                smsCode: this.$refs.code.value
-            }).then(() => {
-                let depositData: depositDataTmp = {
-                    mobile: this.$refs.phone.value,
-                    actInfoId: this.actInfoId,
-                    giftId: this.currentGiftId
-                }
-                this.$emit('alertModal:close')
-                apiCall.post('/mk/nine/sales/createDeposit', depositData).then((data) => {
-                    this.$emit('alert:mode', {
-                        txt: '登录成功',
-                        type: 'alertToast'
-                    })
-                    MtaH5.clickStat('logined')
-                    this.goPaying(data)
-                }).catch(() => {
-                    this.$emit('modal', {
-                        type: 'toast',
-                        txt: '登录失败'
-                    })
+            let loginData = {
+                phoneNumber: phoneNumber,
+                smsCode: msgCode
+            }
+            apiCall.post('/mk/nine/sales/authPhoneBySms', loginData).then(() => {
+                this.$emit('alert:mode', {
+                    txt: '登录成功',
+                    type: 'alertToast'
                 })
+                cookie.set('phone', phoneNumber, 3 * 60* 1000)
+                MtaH5.clickStat('logined')
+                this.$emit('alert:mode', {
+                    type: 'alertLoading',
+                    txt: '创建订单中'
+                })
+                this.checkDepositState(phoneNumber)
+            }).catch(() => {
+                this.$emit('alert:mode', {
+                    type: 'alertToast',
+                    txt: '登录失败'
+                })
+            })
+        }
+
+        createDeposit(phoneNumber: string) {
+            apiCall.post('/mk/nine/sales/createDeposit', {
+                mobile: phoneNumber,
+                actInfoId: this.actInfoId,
+                giftId: this.currentGiftId
+            }).then((data) => {
+                this.$emit('alertModal:close')
+                this.goPaying(data)
+            }).catch(()=>{
+                this.$emit('modal', {
+                    type: 'toast',
+                    txt: '创建订单失败'
+                })
+            })
+        }
+
+        checkDepositState(phoneNumber: string) {
+            apiCall.post('/mk/nine/sales/searchDepositByMobile', {
+                mobile: phoneNumber
+            }).then((data) => {
+                if (!data) {
+                    this.createDeposit(phoneNumber)
+                } else {
+                    this.$emit('alertModal:close')
+                    switch (data.depositState){
+                        case 'UNPAID':
+                            // 未支付
+                            this.$emit('modal', {
+                                type: 'confirm',
+                                title: '检测到有未支付的订单',
+                                txt: '有一笔未支付的订单，请选择操作',
+                                cancelTxt: '取消订单',
+                                sureTxt: '支付订单',
+                                cancel:()=>{
+                                    this.$emit('modal', {
+                                        type: 'loading',
+                                        txt: '取消订单中'
+                                    })
+                                  apiCall.post('/mk/nine/sales/stateChange',{
+                                      depositNo: data.depositNo
+                                  }).then(()=>{
+                                      this.$emit('modal', {
+                                          type: 'toast',
+                                          txt: '订单已取消，可再次选择并购买'
+                                      })
+                                  })
+                                },
+                                sure:()=>{
+                                    this.$emit('modal', {
+                                        type: 'loading'
+                                    })
+                                    this.createDeposit(phoneNumber)
+                                }
+                            })
+                            break
+                        case 'PAID':
+                            // 支付
+                            this.$router.push({
+                                path: '/success',
+                                query: {
+                                    depositNo: data.depositNo
+                                }
+                            })
+                            break;
+                        case 'REFUNDING':
+                            // 退款中
+                            this.goStatusPage('REFUNDING');
+                            break;
+                        case 'OCCUPIED':
+                            // 已占用
+                            this.goStatusPage('OCCUPIED');
+                            break;
+                        case 'REFUNDFAILED':
+                            // 退款失败
+                            this.goStatusPage('REFUNDFAILED');
+                            break;
+                        case 'unknown':
+                            this.goStatusPage('unknown');
+                            break;
+                        default :
+                            this.createDeposit(phoneNumber)
+                    }
+                }
+            }).catch(() => {
+                this.$emit('alert:mode', {
+                    type: 'alertToast',
+                    txt: '登录失败'
+                })
+
             })
         }
 
@@ -289,11 +376,27 @@
         }
 
         getCode(): void {
+            let reg: any = /^1[0-9]{10}$/;
+            let phoneNumber: string = this.$refs.phone.value
+            if (!phoneNumber) {
+                this.$emit('alert:mode', {
+                    txt: '请输入手机号',
+                    type: 'alertToast'
+                })
+                return
+            }
+            if (!reg.test(phoneNumber)) {
+                this.$emit('alert:mode', {
+                    txt: '输入正确的11位手机号',
+                    type: 'alertToast'
+                })
+                return
+            }
             this.$emit('alert:mode', {
                 type: 'alertLoading'
             })
             apiCall.post('/sms/getSmsCode', {
-                phoneNumber: this.$refs.phone.value
+                phoneNumber: phoneNumber
             }).then(() => {
                 this.$emit('alertModal:close')
                 this.codeStatus = 'reciprocal'
@@ -313,11 +416,19 @@
         goBuy(obj): void {
             MtaH5.clickStat('clkbuy')
             this.currentGiftId = obj.giftId
-            this.alertType = 'login'
             clearInterval(this.timer)
-            this.$emit('modal', {
-                type: 'alert'
-            })
+            let cachePhone: string = cookie.get('phone') || ''
+            if (cachePhone) {
+                this.$emit('modal', {
+                    type: 'loading'
+                })
+                this.checkDepositState(cachePhone)
+            } else {
+                this.alertType = 'login'
+                this.$emit('modal', {
+                    type: 'alert'
+                })
+            }
         }
 
         showRule(): void {
@@ -708,11 +819,12 @@
     }
 
     .detailPic {
+        background: transparent;
         margin: 50px auto 0 auto;
         width: 720px;
         img {
             width: 100%;
-            height: 923px;
+            /*height: 923px;*/
         }
     }
 

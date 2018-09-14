@@ -1,12 +1,12 @@
 import Vue from 'vue'
-import 'babel-polyfill'
 import App from './app.vue'
 import VueLazyload from 'vue-lazyload'
 import router from './router'
 
 Vue.use(VueLazyload,  {
     preLoad: 1.3,
-    loading: 'https://static.sunlands.com/wechat-management/prod/openCourse/assets/v2.2/course_bg.png',
+    error: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/detailLoading2.png',
+    loading: 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/detailLoading2.png',
     attempt: 3,
     listenEvents: [ 'scroll' ]
 });

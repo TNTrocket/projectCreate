@@ -30,7 +30,23 @@
                     break
                 case 'activityEnd':
                     this.errorTxt = '活动已结束，感谢参与'
-                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/endActivity.png'
+                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/canNotPay.png'
+                    break
+                case 'REFUNDING':
+                    this.errorTxt = '定金正在进行退款中，预计在4个工作日内完成，请留意微信提醒'
+                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/canNotPay.png'
+                    break
+                case 'OCCUPIED':
+                    this.errorTxt = '定金已经使用了，请联系你的学习规划师查看报名状态'
+                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/canNotPay.png'
+                    break
+                case 'REFUNDFAILED':
+                    this.errorTxt = '定金退款失败，请联系你的学习规划师查看具体问题'
+                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/canNotPay.png'
+                    break
+                case 'unknown':
+                    this.errorTxt = '请联系你的学习规划师查看具体问题'
+                    this.pic = 'https://static.sunlands.com/wechat-management/prod/mk_mp/h5Activity/canNotPay.png'
                     break
             }
         }
@@ -43,7 +59,8 @@
 
 <style lang="less" module>
     .wrapper {
-        padding: 0 30px;
+        padding: 0 100px;
+        text-align: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -51,7 +68,7 @@
         background: #fff;
         padding-top: 300px;
         width: 100%;
-        /*height: 100%;*/
+        font-size: 28px;
     }
 
     .IconType {
