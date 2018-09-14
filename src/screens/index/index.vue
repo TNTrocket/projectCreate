@@ -294,7 +294,7 @@
                     this.createDeposit(phoneNumber)
                 } else {
                     this.$emit('alertModal:close')
-                    switch (data.depositState){
+                    switch (data.depositstate){
                         case 'UNPAID':
                             // 未支付
                             this.$emit('modal', {
@@ -315,13 +315,18 @@
                                           type: 'toast',
                                           txt: '订单已取消，可再次选择并购买'
                                       })
+                                  }).catch(()=>{
+                                      this.$emit('modal', {
+                                          type: 'toast',
+                                          txt: '订单取消失败'
+                                      })
                                   })
                                 },
                                 sure:()=>{
                                     this.$emit('modal', {
                                         type: 'loading'
                                     })
-                                    this.createDeposit(phoneNumber)
+                                    this.goPaying(data)
                                 }
                             })
                             break
@@ -365,7 +370,9 @@
         goPaying(data): void {
             this.formValue = data.depositNo;
             this.formAction = data.url;
-            (<HTMLFormElement>document.getElementById('form-pay')).submit();
+            this.$nextTick(()=>{
+                (<HTMLFormElement>document.getElementById('form-pay')).submit();
+            })
         }
 
         indexAlertMode(obj: indexToastObj): void {
